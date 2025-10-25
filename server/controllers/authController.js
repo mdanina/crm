@@ -63,3 +63,50 @@ exports.getCurrentUser = (req, res) => {
     res.json(user);
   });
 };
+
+// Проверка наличия пользователей в системе
+exports.checkSetup = (req, res) => {
+  db.get('SELECT COUNT(*) as count FROM users', (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+    res.json({
+      hasUsers: result.count > 0,
+      userCount: result.count
+    });
+  });
+};
+
+// Создание первого админа (только если база пустая)
+exports.setupAdmin = (req, res) => {
+  const { username, password, full_name, email } = req.body;
+
+  // Сначала проверим, есть ли уже пользователи
+  db.get('SELECT COUNT(*) as count FROM users', (err, result) => {
+    if (err) {
+      return res.status(500).json({ error: err.message });
+    }
+
+    if (result.count > 0) {
+      return res.status(400).json({ error: 'В системе уже есть пользователи. Используйте функцию регистрации.' });
+    }
+
+    // База пустая, создаем первого админа
+    const hashedPassword = bcrypt.hashSync(password, 10);
+
+    db.run(
+      'INSERT INTO users (username, password, role, full_name, email) VALUES (?, ?, ?, ?, ?)',
+      [username, hashedPassword, 'admin', full_name, email],
+      function(err) {
+        if (err) {
+          return res.status(400).json({ error: err.message });
+        }
+        res.status(201).json({
+          id: this.lastID,
+          message: 'Первый администратор создан успешно',
+          username: username
+        });
+      }
+    );
+  });
+};

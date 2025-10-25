@@ -119,10 +119,29 @@ db.serialize(() => {
   const bcrypt = require('bcryptjs');
   const hashedPassword = bcrypt.hashSync('admin123', 10);
 
-  db.run(`
-    INSERT OR IGNORE INTO users (username, password, role, full_name, email)
-    VALUES ('admin', ?, 'admin', 'Администратор', 'admin@example.com')
-  `, [hashedPassword]);
+  // Сначала проверим, существует ли уже пользователь
+  db.get('SELECT * FROM users WHERE username = ?', ['admin'], (err, row) => {
+    if (err) {
+      console.error('Ошибка при проверке пользователя:', err);
+      return;
+    }
+
+    if (!row) {
+      // Пользователя нет, создаем
+      db.run(`
+        INSERT INTO users (username, password, role, full_name, email)
+        VALUES (?, ?, ?, ?, ?)
+      `, ['admin', hashedPassword, 'admin', 'Администратор', 'admin@example.com'], function(err) {
+        if (err) {
+          console.error('Ошибка при создании тестового пользователя:', err);
+        } else {
+          console.log('✓ Тестовый пользователь создан: admin / admin123');
+        }
+      });
+    } else {
+      console.log('✓ Тестовый пользователь уже существует: admin / admin123');
+    }
+  });
 });
 
 module.exports = db;
