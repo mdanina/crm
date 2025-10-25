@@ -2,7 +2,7 @@ services:
   - type: web
     name: psychology-crm
     runtime: node
-    buildCommand: npm install && cd client && npm install && cd .. && npm run build
+    buildCommand: npm install && cd client && npm install && npm run build && cd .. && ls -la client/build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
