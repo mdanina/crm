@@ -2,7 +2,7 @@ services:
   - type: web
     name: psychology-crm
     runtime: node
-    buildCommand: npm run deploy
+    buildCommand: npm install && cd client && npm install && cd .. && npm run build
     startCommand: npm start
     envVars:
       - key: NODE_ENV
@@ -11,4 +11,3 @@ services:
         generateValue: true
       - key: DATABASE_PATH
         value: ./database.sqlite
-    healthCheckPath: /api/dashboard/stats
