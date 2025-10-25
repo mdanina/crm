@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "description": "CRM система для психологического центра",
   "main": "server/index.js",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "start": "node server/index.js",
     "dev": "nodemon server/index.js",
     "client": "cd client && npm start",
     "install-all": "npm install && cd client && npm install",
-    "build": "cd client && npm run build"
+    "build": "cd client && npm run build",
+    "deploy": "npm install && cd client && npm install && npm run build"
   },
   "keywords": ["crm", "psychology", "healthcare"],
   "author": "",
