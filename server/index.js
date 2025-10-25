@@ -3,6 +3,7 @@ const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const morgan = require('morgan');
+const path = require('path');
 
 // Инициализация БД
 require('./config/database');
@@ -25,7 +26,7 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan('dev'));
 
-// Маршруты
+// Маршруты API
 app.use('/api/auth', authRoutes);
 app.use('/api/clients', clientsRoutes);
 app.use('/api/psychologists', psychologistsRoutes);
@@ -34,10 +35,19 @@ app.use('/api/sessions', sessionsRoutes);
 app.use('/api/payments', paymentsRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 
-// Базовый маршрут
-app.get('/', (req, res) => {
-  res.json({ message: 'CRM система для психологического центра - API сервер запущен' });
-});
+// Обслуживание статических файлов React в production
+if (process.env.NODE_ENV === 'production') {
+  app.use(express.static(path.join(__dirname, '../client/build')));
+
+  app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, '../client/build', 'index.html'));
+  });
+} else {
+  // Базовый маршрут для разработки
+  app.get('/', (req, res) => {
+    res.json({ message: 'CRM система для психологического центра - API сервер запущен' });
+  });
+}
 
 // Обработка ошибок
 app.use((err, req, res, next) => {
