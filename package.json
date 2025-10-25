@@ -12,7 +12,8 @@
     "client": "cd client && npm start",
     "install-all": "npm install && cd client && npm install",
     "build": "cd client && npm run build",
-    "deploy": "npm install && cd client && npm install && npm run build"
+    "deploy": "npm install && cd client && npm install && npm run build",
+    "postinstall": "cd client && npm install && npm run build"
   },
   "keywords": ["crm", "psychology", "healthcare"],
   "author": "",
